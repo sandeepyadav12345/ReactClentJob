@@ -11,39 +11,17 @@ import AuthLogin from '../auth-forms/AuthLogin';
 import Logo from 'ui-component/Logo';
 import AuthFooter from 'ui-component/cards/AuthFooter';
 import useAuth from 'hooks/useAuth';
-import { useQuery, gql } from '@apollo/client';
 // assets
 
 // ================================|| AUTH3 - LOGIN ||================================ //
-const FILMS_QUERY = gql`
-{
-    getJobById(id:"63176968506253558c9a48c5"){
-      title
-      
-    }
-  }
-`;
-console.log(FILMS_QUERY);
+
 const Login = () => {
     const theme = useTheme();
     const { isLoggedIn } = useAuth();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
 
-    const { data, loading, error } = useQuery(FILMS_QUERY);
-     console.log(data);
-    if (loading) return 'Loading...';
-    if (error) return <pre>{error.message}</pre>
     return (
-      
         <AuthWrapper1>
-              <div>
-      <h1>SpaceX Launches</h1>
-      <ul>
-        
-          <li>{data.getJobById.title}</li>
-    
-      </ul>
-    </div>
             <Grid container direction="column" justifyContent="flex-end" sx={{ minHeight: '100vh' }}>
                 <Grid item xs={12}>
                     <Grid container justifyContent="center" alignItems="center" sx={{ minHeight: 'calc(100vh - 68px)' }}>

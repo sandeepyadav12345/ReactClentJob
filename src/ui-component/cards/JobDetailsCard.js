@@ -7,20 +7,19 @@ import { Button, Card, Grid, IconButton, Menu, MenuItem, Typography } from '@mui
 
 // project imports
 import { gridSpacing } from 'store/constant';
-import Avatar from '../extended/Avatar';
+
 
 // assets
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 import NotInterestedTwoToneIcon from '@mui/icons-material/NotInterestedTwoTone';
 import ChatBubbleTwoToneIcon from '@mui/icons-material/ChatBubbleTwoTone';
 
-const avatarImage = require.context('assets/images/profile', true);
+
 
 // ==============================|| USER DETAILS CARD ||============================== //
 
-const UserDetailsCard = ({  avatar,firstName, lastName, mobileNumber, email, location, language, dateOfBirth }) => {
+const UserDetailsCard = ({ title, position, description, placeName, industry, companyName, companyEmail}) => {
     const theme = useTheme();
-    const avatarProfile = avatar && avatarImage(`./${avatar}`).default;
 
     const [anchorEl, setAnchorEl] = useState(null);
     const handleClick = (event) => {
@@ -45,9 +44,7 @@ const UserDetailsCard = ({  avatar,firstName, lastName, mobileNumber, email, loc
             <Grid container spacing={gridSpacing}>
                 <Grid item xs={12}>
                     <Grid container spacing={gridSpacing}>
-                        <Grid item xs zeroMinWidth>
-                            <Avatar alt={firstName + lastName} size="lg" src={avatarProfile} />
-                        </Grid>
+                        
                         <Grid item>
                             <IconButton size="small" sx={{ mt: -0.75, mr: -0.75 }} onClick={handleClick}>
                                 <MoreHorizOutlinedIcon
@@ -82,34 +79,35 @@ const UserDetailsCard = ({  avatar,firstName, lastName, mobileNumber, email, loc
                 </Grid>
                 <Grid item xs={12}>
                     <Typography variant="h3" component="div">
-                    {firstName + lastName}
+                    {companyName} 
                     </Typography>
+                    <Typography variant="h6">{placeName}</Typography>
                 </Grid>
                 <Grid item xs={12}>
                     <Grid container spacing={gridSpacing}>
                         <Grid item xs={6}>
-                            <Typography variant="caption">Date-Of-Birth</Typography>
-                            <Typography variant="h6">{dateOfBirth}</Typography>
+                            <Typography variant="caption">Job Title</Typography>
+                            <Typography variant="h6">{title}</Typography>
                         </Grid>
                         <Grid item xs={6}>
-                            <Typography variant="caption">Language</Typography>
-                            <Typography variant="h6">{language}</Typography>
+                            <Typography variant="caption">Job position</Typography>
+                            <Typography variant="h6">{position}</Typography>
                         </Grid>
                     </Grid>
                 </Grid>
                 <Grid item xs={12}>
-                    <Typography variant="caption">Email</Typography>
-                    <Typography variant="h6">{email}</Typography>
+                    <Typography variant="caption">Job Description</Typography>
+                    <Typography variant="h6">{description}</Typography>
                 </Grid>
                 <Grid item xs={12}>
                     <Grid container spacing={gridSpacing}>
                         <Grid item xs={6}>
-                            <Typography variant="caption">Phone</Typography>
-                            <Typography variant="h6">{mobileNumber}</Typography>
+                            <Typography variant="caption">Industry</Typography>
+                            <Typography variant="h6">{industry}</Typography>
                         </Grid>
                         <Grid item xs={6}>
-                            <Typography variant="caption">Location</Typography>
-                            <Typography variant="h6">{location}</Typography>
+                            <Typography variant="caption">Comapny Email</Typography>
+                            <Typography variant="h6">{companyEmail}</Typography>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -133,14 +131,13 @@ const UserDetailsCard = ({  avatar,firstName, lastName, mobileNumber, email, loc
 };
 
 UserDetailsCard.propTypes = {
-    firstName: PropTypes.string,
-    avatar: PropTypes.string,
-    mobileNumber: PropTypes.number,
-    email: PropTypes.string,
-    location: PropTypes.string,
-    lastName: PropTypes.string,
-    language: PropTypes.string,
-    dateOfBirth: PropTypes.string,
+    title: PropTypes.string,
+    position: PropTypes.string,
+    description: PropTypes.string,
+    placeName: PropTypes.string,
+    industry: PropTypes.string,
+    companyName: PropTypes.string,
+    companyEmail: PropTypes.string,
 };
 
 export default UserDetailsCard;

@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles';
 import { Button, Grid, InputAdornment, Menu, MenuItem, OutlinedInput, Pagination, Typography } from '@mui/material';
 import { useQuery, gql} from '@apollo/client';
 // project imports
-import UserDetailsCard from 'ui-component/cards/UserDetailsCard';
+import UserDetailsCard from 'ui-component/cards/JobDetailsCard';
 import MainCard from 'ui-component/cards/MainCard';
 import { gridSpacing } from 'store/constant';
 import { useDispatch } from 'store';
@@ -19,18 +19,20 @@ import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 
 const CardStyle1 = () => {
 
-    const USERS = gql`
+    const JOBS = gql`
     query{
-        AllUsers{
-            _id
-          firstName
-          lastName
-          email
-          mobileNumber
-          location
-          language
-          dateOfBirth
-        } 
+        getAllJobs{
+        _id
+          title
+          position
+          description
+          placeName
+          industry
+          companyName
+          companyEmail
+          createdAt
+          updatedAt
+        }
       }`
 
     const theme = useTheme();
@@ -67,16 +69,16 @@ const CardStyle1 = () => {
             dispatch(getDetailCards());
         }
     };
-    const { data, loading, error } = useQuery(USERS);
+    const { data, loading, error } = useQuery(JOBS);
     if (loading) return 'Loading...';
     console.log(data);
     if (error) return <pre>{error.message}</pre>
 
     let usersResult = <></>;
     if (data) {
-        usersResult = data.AllUsers.map((users) => (
-            <Grid key={users.email} item xs={12} sm={6} lg={4} xl={3}>
-                <UserDetailsCard {...users} />
+        usersResult = data.getAllJobs.map((jobs) => (
+            <Grid key={jobs.createdAt} item xs={12} sm={6} lg={4} xl={3}>
+                <UserDetailsCard {...jobs} />
             </Grid>
         ));
     }
@@ -86,7 +88,7 @@ const CardStyle1 = () => {
             title={
                 <Grid container alignItems="center" justifyContent="space-between" spacing={gridSpacing}>
                     <Grid item>
-                        <Typography variant="h3">Users</Typography>
+                        <Typography variant="h3">Jobs</Typography>
                     </Grid>
                     <Grid item>
                         <OutlinedInput

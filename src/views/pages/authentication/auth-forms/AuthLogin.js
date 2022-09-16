@@ -19,16 +19,15 @@ import {
     OutlinedInput,
     Stack,
     Typography,
-    useMediaQuery
+    
 } from '@mui/material';
 
 // third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-
+import { useMutation, gql, HttpLink, ApolloClient, InMemoryCache } from '@apollo/client';
 // project imports
 import useConfig from 'hooks/useConfig';
-import useAuth from 'hooks/useAuth';
 import useScriptRef from 'hooks/useScriptRef';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 
@@ -36,25 +35,42 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import Google from 'assets/images/icons/social-google.svg';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
-const FirebaseLogin = ({ loginProp, ...others }) => {
+const FirebaseLogin = ({loginProp}) => {
+
+    const client = new ApolloClient({
+        link: new HttpLink({
+            uri: 'http://localhost:3000/graphql'
+          }),
+        cache: new InMemoryCache()
+    });
+    
     const theme = useTheme();
     const scriptedRef = useScriptRef();
-    const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
+//    const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
     const { borderRadius } = useConfig();
     const [checked, setChecked] = React.useState(true);
 
-    const { firebaseEmailPasswordSignIn, firebaseGoogleSignIn } = useAuth();
-    const googleHandler = async () => {
-        try {
-            await firebaseGoogleSignIn();
-        } catch (err) {
-            console.error(err);
-        }
-    };
+ 
+// const googleHandler = async () => {
+//     try {
+//         await firebaseGoogleSignIn();
+//     } catch (err) {
+//         console.error(err);
+//     }
+// };
+    const LOGIN = gql`
+    mutation($email:String!,$password:String!){
+        login(adminloginData:{
+          email:$email,
+          password:$password,
+          
+        }){
+          accessToken
+          refreshToken
+      }}`
 
     const [showPassword, setShowPassword] = React.useState(false);
     const handleClickShowPassword = () => {
@@ -64,11 +80,13 @@ const FirebaseLogin = ({ loginProp, ...others }) => {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
-
+    const {  loading, error } = useMutation(LOGIN);
+    if (loading) return 'Loading...';
+    if (error) return <pre>{error.message}</pre>
     return (
         <>
             <Grid container direction="column" justifyContent="center" spacing={2}>
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                     <AnimateButton>
                         <Button
                             disableElevation
@@ -88,7 +106,7 @@ const FirebaseLogin = ({ loginProp, ...others }) => {
                             Sign in with Google
                         </Button>
                     </AnimateButton>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12}>
                     <Box
                         sx={{
@@ -131,8 +149,8 @@ const FirebaseLogin = ({ loginProp, ...others }) => {
 
             <Formik
                 initialValues={{
-                    email: 'info@codedthemes.com',
-                    password: '123456',
+                    email: '',
+                    password: '',
                     submit: null
                 }}
                 validationSchema={Yup.object().shape({
@@ -141,21 +159,27 @@ const FirebaseLogin = ({ loginProp, ...others }) => {
                 })}
                 onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
                     try {
-                        await firebaseEmailPasswordSignIn(values.email, values.password).then(
-                            () => {
-                                // WARNING: do not set any formik state here as formik might be already destroyed here. You may get following error by doing so.
-                                // Warning: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application.
-                                // To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
-                                // github issue: https://github.com/formium/formik/issues/2430
+
+                        console.log(values);
+                        const email = values.email;
+                        const password = values.password;
+                        
+                        console.log(values.email);
+                        console.log(values.password);
+                        await client.mutate({
+                            variables: { 
+                         email,
+                       password
+                         
                             },
-                            (err) => {
-                                if (scriptedRef.current) {
-                                    setStatus({ success: false });
-                                    setErrors({ submit: err.message });
-                                    setSubmitting(false);
-                                }
-                            }
-                        );
+                            mutation: LOGIN
+                        });
+                        if (scriptedRef.current) {
+                            setStatus({ success: true });
+                            setSubmitting(false);
+                        }
+                      
+
                     } catch (err) {
                         console.error(err);
                         if (scriptedRef.current) {
@@ -167,7 +191,7 @@ const FirebaseLogin = ({ loginProp, ...others }) => {
                 }}
             >
                 {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-                    <form noValidate onSubmit={handleSubmit} {...others}>
+                    <form noValidate onSubmit={handleSubmit}>
                         <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
                             <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
                             <OutlinedInput
@@ -276,7 +300,7 @@ const FirebaseLogin = ({ loginProp, ...others }) => {
     );
 };
 
-FirebaseLogin.propTypes = {
+ FirebaseLogin.propTypes = {
     loginProp: PropTypes.number
 };
 

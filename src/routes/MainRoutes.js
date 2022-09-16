@@ -3,7 +3,6 @@ import { lazy } from 'react';
 // project imports
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
-import AuthGuard from 'utils/route-guard/AuthGuard';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
@@ -24,6 +23,7 @@ const AppUserAccountProfile3 = Loadable(lazy(() => import('views/application/use
 const AppProfileCardStyle1 = Loadable(lazy(() => import('views/application/users/card/CardStyle1')));
 const AppProfileCardStyle2 = Loadable(lazy(() => import('views/application/users/card/CardStyle2')));
 const AppProfileCardStyle3 = Loadable(lazy(() => import('views/application/users/card/CardStyle3')));
+const AppProfileCardStyle4 = Loadable(lazy(() => import('views/application/users/card/CardStyle4')));
 const AppProfileListStyle1 = Loadable(lazy(() => import('views/application/users/list/Style1')));
 const AppProfileListStyle2 = Loadable(lazy(() => import('views/application/users/list/Style2')));
 
@@ -137,9 +137,9 @@ const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 const MainRoutes = {
     path: '/',
     element: (
-        <AuthGuard>
+        
             <MainLayout />
-        </AuthGuard>
+        
     ),
     children: [
         {
@@ -183,6 +183,10 @@ const MainRoutes = {
         {
             path: '/user/card/card3',
             element: <AppProfileCardStyle3 />
+        },
+        {
+            path: '/user/card/card4',
+            element: <AppProfileCardStyle4 />
         },
         {
             path: '/user/list/list1',

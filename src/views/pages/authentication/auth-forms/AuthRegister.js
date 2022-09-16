@@ -17,9 +17,8 @@ import {
     InputAdornment,
     InputLabel,
     OutlinedInput,
-    TextField,
     Typography,
-    useMediaQuery
+
 } from '@mui/material';
 
 // third party
@@ -46,7 +45,7 @@ const FirebaseRegister = () => {
     });
     const theme = useTheme();
     const scriptedRef = useScriptRef();
-    const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
+   // const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
     const { borderRadius } = useConfig();
     const [showPassword, setShowPassword] = React.useState(false);
     const [checked, setChecked] = React.useState(true);
@@ -91,10 +90,10 @@ const FirebaseRegister = () => {
     useEffect(() => {
         changePassword('123456');
     }, []);
-    const { data, loading, error } = useMutation(SUBMIT_POST);
-    console.log(data);
+    const {  loading, error } = useMutation(SUBMIT_POST);
     if (loading) return 'Loading...';
     if (error) return <pre>{error.message}</pre>
+    
     return (
         <>
             <Grid container direction="column" justifyContent="center" spacing={2}>
@@ -119,6 +118,7 @@ const FirebaseRegister = () => {
                     </AnimateButton>
                 </Grid> */}
                 <Grid item xs={12}>
+                    
                     <Box sx={{ alignItems: 'center', display: 'flex' }}>
                         <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
                         <Button
@@ -155,6 +155,7 @@ const FirebaseRegister = () => {
                 initialValues={{
                     email: '',
                     password: '',
+                    name:'',
                     submit: null
                 }}
                 validationSchema={Yup.object().shape({
@@ -163,10 +164,10 @@ const FirebaseRegister = () => {
                 })}
                 onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
                     try {
-                       
+                       console.log(values);
                         const email = values.email;
                         const password = values.password;
-                        const name = 'sandeep';
+                        const name = values.name ;
                         console.log(values.email);
                         console.log(values.password);
                         await client.mutate({
@@ -178,7 +179,11 @@ const FirebaseRegister = () => {
                             mutation: SUBMIT_POST
                         });
 
+                        if(scriptedRef.current){
+                            setStatus({ success: true });
                         
+                            setSubmitting(false);
+                        }
                      
                     } catch (err) {
                         console.error(err);
@@ -192,30 +197,23 @@ const FirebaseRegister = () => {
             >
                 {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                     <form noValidate onSubmit={handleSubmit} >
-                        <Grid container spacing={matchDownSM ? 0 : 2}>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="First Name"
-                                    margin="normal"
-                                    name="fname"
-                                    type="text"
-                                    defaultValue=""
-                                    sx={{ ...theme.typography.customInput }}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Last Name"
-                                    margin="normal"
-                                    name="lname"
-                                    type="text"
-                                    defaultValue=""
-                                    sx={{ ...theme.typography.customInput }}
-                                />
-                            </Grid>
-                        </Grid>
+                        <FormControl fullWidth error={Boolean(touched.name && errors.name)} sx={{ ...theme.typography.customInput }}>
+                            <InputLabel htmlFor="outlined-adornment-email-register">Full Name</InputLabel>
+                            <OutlinedInput
+                                id="outlined-adornment-name-register"
+                                type="text"
+                                value={values.name}
+                                name="name"
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                inputProps={{}}
+                            />
+                            {touched.name && errors.name && (
+                                <FormHelperText error id="standard-weight-helper-text--register">
+                                    {errors.name}
+                                </FormHelperText>
+                            )}
+                        </FormControl>
                         <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
                             <InputLabel htmlFor="outlined-adornment-email-register">Email Address / Username</InputLabel>
                             <OutlinedInput
